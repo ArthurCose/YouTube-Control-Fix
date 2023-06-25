@@ -6,3 +6,8 @@ The YouTube UI has a different action for the arrow keys depending on if you las
 
 YouTube is a trademark of Google Inc.
 Use of this trademark is subject to Google Permissions.
+
+## Download
+
+- [Chrome](https://chrome.google.com/webstore/detail/youtube-control-fix/pkemfahanpgdcdmgcehgblhagnhacpjo)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/youtube-control-fix)

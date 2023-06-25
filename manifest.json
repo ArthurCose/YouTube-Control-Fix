@@ -1,4 +1,5 @@
 {
+  "manifest_version": 3,
   "name": "YouTube Control Fix",
   "version": "1.0.1",
   "description": "Stops audio from changing when using the left and right arrow keys and video from skipping when pressing the up and down arrow keys.",
@@ -13,5 +14,9 @@
       "all_frames": true
     }
   ],
-  "manifest_version": 3
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{1e6672b5-a286-4217-83ec-81cc872debcf}"
+    }
+  }
 }
