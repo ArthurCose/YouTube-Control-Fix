@@ -195,17 +195,20 @@ class VideoEventBinder {
 const videoBinder = new VideoEventBinder();
 
 const observer = new MutationObserver((mutationList) => {
-  if (!videoBinder.binded) {
-    videoBinder.bind();
-  }
-
   for (const mutation of mutationList) {
     for (const node of mutation.removedNodes) {
-      if (node.contains(videoBinder.videoElement)) {
+      if (
+        node == videoBinder.videoElement ||
+        node.contains(videoBinder.videoElement)
+      ) {
         videoBinder.unbind();
         break;
       }
     }
+  }
+
+  if (!videoBinder.binded) {
+    videoBinder.bind();
   }
 });
 
