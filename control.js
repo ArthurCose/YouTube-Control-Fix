@@ -1,4 +1,10 @@
-const passedKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+const forwardedKeys = [
+  "Space",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "ArrowDown",
+];
 
 function createKeyboardEvent(type, key, code, keyCode) {
   return new KeyboardEvent(type, {
@@ -17,18 +23,36 @@ function dispatchFakeKeyboardEvent(target, type, key, code, keyCode) {
 class VideoEventBinder {
   constructor() {
     // this.videoContainer = null;
-    // this.videoElement = null;
-    // this.volumeElement = null;
-    // this.progressElement = null;
-    // this.previousVolume = 0; // out of 1?
-    // this.muteHistory = [false, false]; // past two states
-    // this.previousTime = 0; // seconds
-    // this.volumeChangeListener = null;
-    // this.timeUpdateListener = null;
-    // this.volumePanelListener = null;
-    // this.progressBarListener = null;
+    // this.targetElement = null;
+    // this.keyDownListener = null;
     // this.binded = false;
+
+    this.createListeners();
     this.bind();
+  }
+
+  createListeners() {
+    this.keyDownListener = (e) => {
+      if (!e.isTrusted) {
+        // our generated event
+        return;
+      }
+
+      if (!forwardedKeys.includes(e.code)) {
+        // we don't recognize this key
+        return;
+      }
+
+      dispatchFakeKeyboardEvent(
+        this.forwardElement,
+        e.type,
+        e.key,
+        e.code,
+        e.keyCode
+      );
+
+      e.preventDefault();
+    };
   }
 
   bind() {
@@ -41,113 +65,16 @@ class VideoEventBinder {
   }
 
   bindElements() {
-    this.videoContainer = document.querySelector(".html5-video-player");
-    this.videoElement = document.querySelector(".html5-main-video");
-    this.volumeElement = document.querySelector(".ytp-volume-panel");
-    this.progressElement = document.querySelector(".ytp-progress-bar");
+    this.playerElement = document.querySelector("#player:not(.ytd-shorts)");
+    this.forwardElement = this.playerElement?.querySelector("#movie_player");
 
-    if (this.videoElement) {
-      this.previousVolume = this.videoElement.volume;
-      this.muteHistory = [this.videoElement.muted, this.videoElement.muted];
-      this.previousTime = this.videoElement.currentTime;
-    }
-
-    // require every element, youtube shorts are missing volume element
-    this.binded =
-      this.videoElement && this.volumeElement && this.progressElement;
+    this.binded = this.playerElement && this.forwardElement;
 
     return this.binded;
   }
 
   bindEvents() {
-    this.volumeListener = () => {
-      this.previousVolume = this.videoElement.volume;
-      this.muteHistory[0] = this.muteHistory[1];
-      this.muteHistory[1] = this.videoElement.muted;
-    };
-
-    this.timeListener = () => {
-      this.previousTime = this.videoElement.currentTime;
-    };
-
-    this.volumePanelListener = this.createKeyHandler((e) => {
-      switch (e.key) {
-        case "ArrowLeft":
-          if (this.previousVolume > 0) {
-            dispatchFakeKeyboardEvent(
-              e.target,
-              e.type,
-              "ArrowRight",
-              "ArrowRight",
-              39
-            );
-
-            if (this.muteHistory[0] && !this.videoElement.muted) {
-              dispatchFakeKeyboardEvent(
-                this.videoContainer,
-                e.type,
-                "m",
-                "KeyM",
-                77
-              );
-            }
-          }
-          break;
-        case "ArrowRight":
-          if (this.previousVolume < 1) {
-            dispatchFakeKeyboardEvent(
-              e.target,
-              e.type,
-              "ArrowLeft",
-              "ArrowLeft",
-              37
-            );
-
-            if (this.muteHistory[0] && !this.videoElement.muted) {
-              dispatchFakeKeyboardEvent(
-                this.videoContainer,
-                e.type,
-                "m",
-                "KeyM",
-                77
-              );
-            }
-          }
-          break;
-      }
-    });
-
-    this.progressBarListener = this.createKeyHandler((e) => {
-      switch (e.key) {
-        case "ArrowUp":
-          if (this.previousTime < this.videoElement.duration) {
-            dispatchFakeKeyboardEvent(
-              e.target,
-              e.type,
-              "ArrowDown",
-              "ArrowDown",
-              40
-            );
-          }
-          break;
-        case "ArrowDown":
-          if (this.previousTime > 0) {
-            dispatchFakeKeyboardEvent(
-              e.target,
-              e.type,
-              "ArrowUp",
-              "ArrowUp",
-              38
-            );
-          }
-          break;
-      }
-    });
-
-    this.videoElement.addEventListener("volumechange", this.volumeListener);
-    this.videoElement.addEventListener("timeupdate", this.timeListener);
-    this.volumeElement.addEventListener("keydown", this.volumePanelListener);
-    this.progressElement.addEventListener("keydown", this.progressBarListener);
+    this.playerElement.addEventListener("keydown", this.keyDownListener, true);
   }
 
   unbind() {
@@ -157,38 +84,8 @@ class VideoEventBinder {
 
     this.binded = false;
 
-    this.videoElement.removeEventListener("volumechange", this.volumeListener);
-    this.videoElement.removeEventListener("timeupdate", this.timeListener);
-    this.volumeElement.removeEventListener("keydown", this.volumePanelListener);
-    this.progressElement.removeEventListener(
-      "keydown",
-      this.progressBarListener
-    );
-
-    this.videoElement = null;
-    this.volumeElement = null;
-    this.progressElement = null;
-  }
-
-  createKeyHandler(reverser) {
-    return (event) => {
-      // our generated event
-      if (!event.isTrusted) {
-        return;
-      }
-
-      if (!passedKeys.includes(event.key)) {
-        return;
-      }
-
-      // reverses previous handler effects
-      // needed as we can't reorder event listeners
-      reverser(event);
-
-      this.videoElement.dispatchEvent(new KeyboardEvent(event.type, event));
-      event.preventDefault();
-      event.stopPropagation();
-    };
+    this.playerElement = null;
+    this.forwardElement = null;
   }
 }
 
@@ -198,8 +95,8 @@ const observer = new MutationObserver((mutationList) => {
   for (const mutation of mutationList) {
     for (const node of mutation.removedNodes) {
       if (
-        node == videoBinder.videoElement ||
-        node.contains(videoBinder.videoElement)
+        node == videoBinder.playerElement ||
+        node.contains(videoBinder.playerElement)
       ) {
         videoBinder.unbind();
         break;
