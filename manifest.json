@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "YouTube Control Fix",
-  "version": "1.0.1",
-  "description": "Stops audio from changing when using the left and right arrow keys and video from skipping when pressing the up and down arrow keys.",
+  "version": "1.1.0",
+  "description": "Control consistency for arrow and space users.",
   "icons": {
     "128": "icon_128.png",
     "48": "icon_48.png"
