@@ -65,7 +65,7 @@ class VideoEventBinder {
   }
 
   bindElements() {
-    this.playerElement = document.querySelector("#player:not(.ytd-shorts)");
+    this.playerElement = document.querySelector("#content #player-container");
     this.forwardElement = this.playerElement?.querySelector("#movie_player");
 
     this.binded = this.playerElement && this.forwardElement;
