@@ -52,6 +52,7 @@ class VideoEventBinder {
       );
 
       e.preventDefault();
+      e.stopImmediatePropagation();
     };
   }
 
