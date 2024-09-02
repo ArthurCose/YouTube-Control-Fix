@@ -32,9 +32,18 @@ class VideoEventBinder {
   }
 
   createListeners() {
+    /**
+     * @param {KeyboardEvent} e
+     */
     this.keyDownListener = (e) => {
       if (!e.isTrusted) {
         // our generated event
+        return;
+      }
+
+      if (e.altKey || e.metaKey) {
+        // ignore if alt is active, common shortcut for the browser history
+        // ignore if the meta key is active, used by the OS
         return;
       }
 
