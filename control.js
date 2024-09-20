@@ -6,6 +6,8 @@ const forwardedKeys = [
   "ArrowDown",
 ];
 
+const ignoredElements = ["INPUT", "TEXTAREA"];
+
 function createKeyboardEvent(type, key, code, keyCode) {
   return new KeyboardEvent(type, {
     key,
@@ -38,6 +40,11 @@ class VideoEventBinder {
     this.keyDownListener = (e) => {
       if (!e.isTrusted) {
         // our generated event
+        return;
+      }
+
+      if (e.target && ignoredElements.includes(e.target.nodeName)) {
+        // https://github.com/ArthurCose/YouTube-Control-Fix/issues/3
         return;
       }
 
