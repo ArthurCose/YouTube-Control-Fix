@@ -8,20 +8,6 @@ const forwardedKeys = [
 
 const ignoredElements = ["INPUT", "TEXTAREA"];
 
-function createKeyboardEvent(type, key, code, keyCode) {
-  return new KeyboardEvent(type, {
-    key,
-    code,
-    keyCode,
-    which: keyCode,
-  });
-}
-
-function dispatchFakeKeyboardEvent(target, type, key, code, keyCode) {
-  const event = createKeyboardEvent(type, key, code, keyCode);
-  target.dispatchEvent(event);
-}
-
 class VideoEventBinder {
   constructor() {
     // this.videoContainer = null;
