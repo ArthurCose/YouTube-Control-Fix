@@ -59,13 +59,8 @@ class VideoEventBinder {
         return;
       }
 
-      dispatchFakeKeyboardEvent(
-        this.forwardElement,
-        e.type,
-        e.key,
-        e.code,
-        e.keyCode
-      );
+      const generatedEvent = new KeyboardEvent(e.type, e);
+      this.forwardElement.dispatchEvent(generatedEvent);
 
       e.preventDefault();
       e.stopImmediatePropagation();
