@@ -4,6 +4,8 @@ const forwardedKeys = [
   "ArrowRight",
   "ArrowUp",
   "ArrowDown",
+  "Home",
+  "End",
 ];
 
 const ignoredElements = ["INPUT", "TEXTAREA"];
