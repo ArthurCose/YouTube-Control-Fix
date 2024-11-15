@@ -8,13 +8,15 @@ const forwardedKeys = [
   "End",
 ];
 
+const forwardedEvents = ["keydown", "keyup"];
+
 const ignoredElements = ["INPUT", "TEXTAREA"];
 
 class VideoEventBinder {
   constructor() {
     // this.videoContainer = null;
     // this.targetElement = null;
-    // this.keyDownListener = null;
+    // this.keyboardListener = null;
     // this.binded = false;
 
     this.createListeners();
@@ -25,7 +27,7 @@ class VideoEventBinder {
     /**
      * @param {KeyboardEvent} e
      */
-    this.keyDownListener = (e) => {
+    this.keyboardListener = (e) => {
       if (!e.isTrusted) {
         // our generated event
         return;
@@ -74,7 +76,13 @@ class VideoEventBinder {
   }
 
   bindEvents() {
-    this.playerElement.addEventListener("keydown", this.keyDownListener, true);
+    for (const eventName of forwardedEvents) {
+      this.playerElement.addEventListener(
+        eventName,
+        this.keyboardListener,
+        true
+      );
+    }
   }
 
   unbind() {
